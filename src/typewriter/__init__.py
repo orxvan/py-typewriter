@@ -13,7 +13,7 @@ except ImportError:
     jieba = None
 
 __all__ = ["typewrite", "generate_typewriter_flow"]
-__version__ = "0.1.0"
+__version__ = "0.3.0"
 
 
 PUNCTUATION_EXTENDED = set(string.punctuation) | {
@@ -39,9 +39,11 @@ PUNCTUATION_EXTENDED = set(string.punctuation) | {
     "、",
 }
 
+END_PUNCTUATION = ".。", "!", "！", "?", "？", "…"
+
 
 def generate_typewriter_flow(
-    text: str, base_delay: float = 0.05, mode: str = "char"
+    text: str, base_delay: float = 0.05, mode: str = "char", max_chunk_size=15, min_chunk_size=5
 ) -> Generator[Tuple[str, float], None, None]:
     """
     生成一个模拟打字机效果的字符或词语流。
@@ -77,23 +79,51 @@ def generate_typewriter_flow(
     else:
         token_generator = iter(text)
 
+    chunk_buffer = []  # 用于存储 token 的缓冲区
+
     for token in token_generator:
-        # 如果整个 token 是一个标点符号，则停顿时间更长
-        if token in PUNCTUATION_EXTENDED:
-            # 对于标点，尤其是句末标点，给予较长的停顿
-            if token in [".", "。", "!", "！", "?", "？", "…"]:
-                delay = base_delay * 8
+        chunk_buffer.append(token)
+
+        # 检查是否满足“吐出”条件
+        # 条件1：当前 token 是一个显著的标点，并且块已达到最小尺寸
+        # 这样做是为了避免像 "Dr." 这样的情况被过早切分
+        is_punctuation_break = token in END_PUNCTUATION and len(chunk_buffer) >= min_chunk_size
+
+        # 条件2：块的长度达到了最大值
+        is_max_size_reached = len(chunk_buffer) >= max_chunk_size
+
+        if is_punctuation_break or is_max_size_reached:
+            # 将缓冲区中的 token 合并成一个字符串
+            chunk_to_yield = "".join(chunk_buffer)
+
+            # --- 延迟计算逻辑 ---
+            # 延迟时间主要由块的最后一个 token 决定
+            last_token = chunk_buffer[-1]
+            delay = 0
+
+            if last_token in END_PUNCTUATION:
+                # 对于句末标点，给予较长的停顿
+                delay = base_delay * 8  # 句末停顿可以更长一些
+            elif last_token in PUNCTUATION_EXTENDED:
+                # 对于普通标点，如逗号，给予中等停顿
+                delay = base_delay * 3
             else:
-                delay = base_delay * 2
-        else:
-            # 对于单词或字符，延迟时间与长度成正比，并加入随机性
-            # 这样，长词的“打字”时间会比短词更长，效果更逼真
-            delay = base_delay * len(token) + random.uniform(-0.02, 0.02)
+                # 如果块是因为达到最大长度而结束，给予一个标准短停顿
+                delay = base_delay
 
-        # 确保延迟不会是负数或过小
-        delay = max(0.01, delay)
+            # 确保延迟不会过小
+            delay = max(0.02, delay)
 
-        yield token, delay
+            yield chunk_to_yield, delay
+
+            # 清空缓冲区，为下一个块做准备
+            chunk_buffer = []
+
+    # 循环结束后，如果缓冲区中还有剩余的 token，将它们作为最后一个块吐出
+    if chunk_buffer:
+        chunk_to_yield = "".join(chunk_buffer)
+        # 最后的块通常没有特定停顿，给一个基础延迟即可
+        yield chunk_to_yield, base_delay
 
 
 def typewrite(text: str, delay: float = 0.05, end: str = "\n") -> None:
@@ -131,9 +161,21 @@ if __name__ == "__main__":
         time.sleep(delay)
     print("\n")  # 换行
 
-    print("--- 模式: 'word' (Jieba分词模式) ---")
+    print("--- 模式: 'word' (Jieba分词模式) 快速（多词合并输出,适合长文本）---")
     try:
         flow_word = generate_typewriter_flow(text_sample_cn, base_delay=0.03, mode="word")
+        for word, delay in flow_word:
+            print(word, end="", flush=True)
+            time.sleep(delay)
+        print("\n")
+    except ImportError as e:
+        print(f"\n错误: {e}")
+
+    print("--- 模式: 'word' (Jieba分词模式) 慢速（逐词输出）---")
+    try:
+        flow_word = generate_typewriter_flow(
+            text_sample_cn, base_delay=0.03, mode="word", max_chunk_size=1, min_chunk_size=1
+        )
         for word, delay in flow_word:
             print(word, end="", flush=True)
             time.sleep(delay)

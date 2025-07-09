@@ -13,7 +13,7 @@
 ## 安装
 
 ```bash
-pip install py-typewriter
+pip install py-typewriter-sse
 ```
 
 ## 使用方法
@@ -52,15 +52,27 @@ print()
     text_sample_en = "Hello, world! This is a typewriter effect simulation."
 
     print("--- 模式: 'char' (默认字符模式) ---")
-    flow_char = generate_typewriter_flow(text_sample_cn, base_delay=0.03)
+    flow_char = typewriter.generate_typewriter_flow(text_sample_cn, base_delay=0.03)
     for char, delay in flow_char:
         print(char, end="", flush=True)  # flush=True 确保立即输出
         time.sleep(delay)
     print("\n")  # 换行
 
-    print("--- 模式: 'word' (Jieba分词模式) ---")
+    print("--- 模式: 'word' (Jieba分词模式) 快速（多词合并输出,适合长文本）---")
     try:
-        flow_word = generate_typewriter_flow(text_sample_cn, base_delay=0.03, mode="word")
+        flow_word = typewriter.generate_typewriter_flow(text_sample_cn, base_delay=0.03, mode="word")
+        for word, delay in flow_word:
+            print(word, end="", flush=True)
+            time.sleep(delay)
+        print("\n")
+    except ImportError as e:
+        print(f"\n错误: {e}")
+
+    print("--- 模式: 'word' (Jieba分词模式) 慢速（逐词输出）---")
+    try:
+        flow_word = typewriter.generate_typewriter_flow(
+            text_sample_cn, base_delay=0.03, mode="word", max_chunk_size=1, min_chunk_size=1
+        )
         for word, delay in flow_word:
             print(word, end="", flush=True)
             time.sleep(delay)
@@ -71,7 +83,7 @@ print()
     print("--- 英文文本在 'word' 模式下的效果 ---")
     # Jieba 也能很好地处理英文和数字
     try:
-        flow_en_word = generate_typewriter_flow(text_sample_en, base_delay=0.03, mode="word")
+        flow_en_word = typewriter.generate_typewriter_flow(text_sample_en, base_delay=0.03, mode="word")
         for word, delay in flow_en_word:
             print(word, end="", flush=True)
             time.sleep(delay)
