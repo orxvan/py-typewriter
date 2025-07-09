@@ -4,46 +4,42 @@
 
 [**English**](./README.md) | [**中文**](README_cn.md)
 
----
+一个简单、灵活的 Python 库，用于在终端模拟自然的打字机输出效果。
 
-<div id="py-typewriter-sse-en"></div>
+## 特点
 
-A simple and flexible Python library for simulating a natural typewriter effect in the terminal.
+- **简单易用**: 只需一行代码即可实现打字机效果。
+- **自然模拟**: 通过随机延迟和标点停顿，效果更逼真。
+- **高度灵活**: 提供底层生成器，允许你完全自定义输出行为。
 
-## Features
-
-- **Easy to Use**: Achieve a typewriter effect with just a single line of code.
-- **Natural Simulation**: More realistic effects through random delays and punctuation pauses.
-- **Highly Flexible**: Provides a low-level generator, allowing you to fully customize the output behavior.
-
-## Installation
+## 安装
 
 ```bash
 pip install py-typewriter-sse
 ```
 
-## Usage
+## 使用方法
 
-### Quick Start
+### 快速上手
 
-The easiest way is to use the `typewrite()` function:
+最简单的方式是使用 `typewrite()` 函数：
 
 ```python
 import typewriter
 
-story = "Once upon a time, in a kingdom far, far away...\neverything was so peaceful."
+story = "很久很久以前，在一个遥远的国度里...\n一切都显得那么宁静。"
 typewriter.typewrite(story)
 ```
 
-### Advanced Usage (Using the Generator)
+### 高级用法 (使用生成器)
 
-For more flexible control, you can use the `generate_typewriter_flow()` generator:
+如果是更灵活的调用，可以使用 `generate_typewriter_flow()` 生成器：
 
 ```python
 import time
 import typewriter
 
-text = "This is a more advanced usage."
+text = "这是一个更高级的用法。"
 
 flow = typewriter.generate_typewriter_flow(text, base_delay=0.1)
 
@@ -52,19 +48,19 @@ for char, delay in flow:
     time.sleep(delay)
 print()
 ```
-### Supports 'char' (Default) and 'word' modes. The 'word' mode supports Chinese word segmentation for a more realistic effect.
+### 支持 char(Default)、word模式，word模式支持对中文进行分词，更贴近实际效果
 ```python
     text_sample_cn = "你好，世界！这是一个基于Jieba分词的打字机效果模拟。它能让中文输出更自然、流畅。"
     text_sample_en = "Hello, world! This is a typewriter effect simulation."
 
-    print("--- Mode: 'char' (Default character mode) ---")
+    print("--- 模式: 'char' (默认字符模式) ---")
     flow_char = typewriter.generate_typewriter_flow(text_sample_cn, base_delay=0.03)
     for char, delay in flow_char:
-        print(char, end="", flush=True)  # flush=True ensures immediate output
+        print(char, end="", flush=True)  # flush=True 确保立即输出
         time.sleep(delay)
-    print("\n")  # Newline
+    print("\n")  # 换行
 
-    print("--- Mode: 'word' (Jieba word segmentation) Fast (multiple words combined, suitable for long text) ---")
+    print("--- 模式: 'word' (Jieba分词模式) 快速（多词合并输出,适合长文本）---")
     try:
         flow_word = typewriter.generate_typewriter_flow(text_sample_cn, base_delay=0.03, mode="word")
         for word, delay in flow_word:
@@ -72,9 +68,9 @@ print()
             time.sleep(delay)
         print("\n")
     except ImportError as e:
-        print(f"\nError: {e}")
+        print(f"\n错误: {e}")
 
-    print("--- Mode: 'word' (Jieba word segmentation) Slow (word by word) ---")
+    print("--- 模式: 'word' (Jieba分词模式) 慢速（逐词输出）---")
     try:
         flow_word = typewriter.generate_typewriter_flow(
             text_sample_cn, base_delay=0.03, mode="word", max_chunk_size=1, min_chunk_size=1
@@ -84,10 +80,10 @@ print()
             time.sleep(delay)
         print("\n")
     except ImportError as e:
-        print(f"\nError: {e}")
+        print(f"\n错误: {e}")
 
-    print("--- English text in 'word' mode ---")
-    # Jieba also handles English and numbers well
+    print("--- 英文文本在 'word' 模式下的效果 ---")
+    # Jieba 也能很好地处理英文和数字
     try:
         flow_en_word = typewriter.generate_typewriter_flow(text_sample_en, base_delay=0.03, mode="word")
         for word, delay in flow_en_word:
@@ -95,19 +91,19 @@ print()
             time.sleep(delay)
         print("\n")
     except ImportError as e:
-        print(f"\nError: {e}")
-```
+        print(f"\n错误: {e}")
+``` 
 
-## Contributing
+## 贡献
 
-Issues and Pull Requests are welcome!
+欢迎提交 Issues 和 Pull Requests！
 
-## License
+## 许可证
 
-This project is licensed under the [MIT License](LICENSE).
+本项目使用 [MIT License](LICENSE)。
 
 
-## License (`LICENSE`)
+#### 4. 许可证 (`LICENSE`)
 
 
 
