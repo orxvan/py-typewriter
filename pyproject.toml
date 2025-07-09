@@ -6,14 +6,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "py-typewriter"
-version = "0.1.0"
+version = "0.2.0"
 authors = [
   { name="orxvan", email="orxvan@gmail.com" },
 ]
 description = "一个简单、灵活的库，用于在终端模拟打字机输出效果。"
 readme = "README.md"
 requires-python = ">=3.7"
-license = { file = "LICENSE" }
 keywords = ["typewriter", "terminal", "cli", "effect", "typing"]
 classifiers = [
     "Development Status :: 4 - Beta",

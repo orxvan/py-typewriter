@@ -9,7 +9,6 @@
 - **简单易用**: 只需一行代码即可实现打字机效果。
 - **自然模拟**: 通过随机延迟和标点停顿，效果更逼真。
 - **高度灵活**: 提供底层生成器，允许你完全自定义输出行为。
-- **零依赖**: 无需安装任何第三方库。
 
 ## 安装
 
@@ -32,7 +31,7 @@ typewriter.typewrite(story)
 
 ### 高级用法 (使用生成器)
 
-如果你需要更多控制权（例如，将输出写入文件或GUI窗口），可以使用 `generate_typewriter_flow()` 生成器：
+如果是更灵活的调用，可以使用 `generate_typewriter_flow()` 生成器：
 
 ```python
 import time
@@ -40,16 +39,46 @@ import typewriter
 
 text = "这是一个更高级的用法。"
 
-# 1. 创建生成器
 flow = typewriter.generate_typewriter_flow(text, base_delay=0.1)
 
-# 2. 自定义消费逻辑
 for char, delay in flow:
-    print(char, end='')
-    # 在这里你可以做任何事，比如更新GUI...
+    print(char, end='', flush=True)
     time.sleep(delay)
-print() # 最后换行
+print()
 ```
+### 支持 char(Default)、word模式，word模式支持对中文进行分词，更贴近实际效果
+```python
+    text_sample_cn = "你好，世界！这是一个基于Jieba分词的打字机效果模拟。它能让中文输出更自然、流畅。"
+    text_sample_en = "Hello, world! This is a typewriter effect simulation."
+
+    print("--- 模式: 'char' (默认字符模式) ---")
+    flow_char = generate_typewriter_flow(text_sample_cn, base_delay=0.03)
+    for char, delay in flow_char:
+        print(char, end="", flush=True)  # flush=True 确保立即输出
+        time.sleep(delay)
+    print("\n")  # 换行
+
+    print("--- 模式: 'word' (Jieba分词模式) ---")
+    try:
+        flow_word = generate_typewriter_flow(text_sample_cn, base_delay=0.03, mode="word")
+        for word, delay in flow_word:
+            print(word, end="", flush=True)
+            time.sleep(delay)
+        print("\n")
+    except ImportError as e:
+        print(f"\n错误: {e}")
+
+    print("--- 英文文本在 'word' 模式下的效果 ---")
+    # Jieba 也能很好地处理英文和数字
+    try:
+        flow_en_word = generate_typewriter_flow(text_sample_en, base_delay=0.03, mode="word")
+        for word, delay in flow_en_word:
+            print(word, end="", flush=True)
+            time.sleep(delay)
+        print("\n")
+    except ImportError as e:
+        print(f"\n错误: {e}")
+``` 
 
 ## 贡献
 
