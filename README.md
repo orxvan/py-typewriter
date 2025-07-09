@@ -1,6 +1,6 @@
 # Py-Typewriter
 
-[![PyPI version](https://badge.fury.io/py/py-typewriter.svg)](https://badge.fury.io/py/py-typewriter)
+[![PyPI version](https://badge.fury.io/py/py-typewriter-sse.svg)](https://badge.fury.io/py/py-typewriter-sse)
 
 一个简单、灵活的 Python 库，用于在终端模拟自然的打字机输出效果。
 
